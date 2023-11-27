@@ -1,0 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace ToDoApi.Models;
+
+public class ToDoContext : DbContext
+{
+  public ToDoContext(DbContextOptions<ToDoContext> options)
+        : base(options)
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<ToDoItem>().Property(t => t.Id).ValueGeneratedOnAdd();
+    }
+
+    public DbSet<ToDoItem> TodoItems { get; set; } = null!;
+}
