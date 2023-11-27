@@ -14,5 +14,5 @@ public class ToDoContext : DbContext
       modelBuilder.Entity<ToDoItem>().Property(t => t.Id).ValueGeneratedOnAdd();
     }
 
-    public DbSet<ToDoItem> TodoItems { get; set; } = null!;
+    public DbSet<ToDoItem> ToDoItems { get; set; } = null!;
 }

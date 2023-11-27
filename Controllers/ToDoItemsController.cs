@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using ToDoApi.Models;
 
 namespace todoapiController.Controllers
@@ -13,5 +14,75 @@ namespace todoapiController.Controllers
     [ApiController]
     public class ToDoItemsController : ControllerBase
     {
+        private readonly ToDoContext dbContext;
+
+        public ToDoItemsController(ToDoContext context)
+        {
+            dbContext = context;
+        }
+
+        // Get: api/ToDoItems
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ToDoItem>>> GetToDoItems()
+        {
+            return await dbContext.ToDoItems.ToListAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ToDoItem>> GetToDoItem(long id)
+        {
+            var todoItem = await dbContext.ToDoItems.FindAsync(id);
+
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            return todoItem;
+        }
+
+        //Post: api/ToDoItems
+        [HttpPost]
+        public async void PostToDoItems(ToDoItem todo)
+        {
+            var todoitem = new ToDoItem
+            {
+                IsComplete = todo.IsComplete,
+                Content = todo.Content
+            };
+
+            dbContext.ToDoItems.Add(todoitem);
+            await dbContext.SaveChangesAsync();
+
+        } 
+
+        //Put: api/ToDoItems/{id}
+        [HttpPut]
+        public async Task<IActionResult> PutToDoItem(long id, ToDoItem todoitem)
+        {
+            if (id != todoitem.Id)
+                return BadRequest();
+
+            dbContext.Entry(todoitem).State = EntityState.Modified;
+            await dbContext.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+
+        //Delete: api/ToDoItems/{id}
+        [HttpDelete]
+        public async Task<IActionResult> DeleteToDoItem(long id)
+        {
+            var todoitem = await dbContext.ToDoItems.FindAsync(id);
+
+            if(todoitem == null)
+                return NotFound();
+            
+            dbContext.ToDoItems.Remove(todoitem);
+            await dbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
