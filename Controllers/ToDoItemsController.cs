@@ -43,7 +43,7 @@ namespace todoapiController.Controllers
 
         //Post: api/ToDoItems
         [HttpPost]
-        public async void PostToDoItems(ToDoItem todo)
+        public async Task<ActionResult<ToDoItem>> PostToDoItems(ToDoItem todo)
         {
             var todoitem = new ToDoItem
             {
@@ -54,15 +54,20 @@ namespace todoapiController.Controllers
             dbContext.ToDoItems.Add(todoitem);
             await dbContext.SaveChangesAsync();
 
+            return CreatedAtAction(nameof(GetToDoItem), new {id = todoitem.Id}, todoitem);
+
         } 
 
         //Put: api/ToDoItems/{id}
         [HttpPut]
-        public async Task<IActionResult> PutToDoItem(long id, ToDoItem todoitem)
+        public async Task<IActionResult> PutToDoItem(ToDoItem todoitem)
         {
-            if (id != todoitem.Id)
-                return BadRequest();
 
+            if (!dbContext.ToDoItems.Any(i => i.Id == todoitem.Id))
+                {
+                    return NotFound();
+                }
+                
             dbContext.Entry(todoitem).State = EntityState.Modified;
             await dbContext.SaveChangesAsync();
 
