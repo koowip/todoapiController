@@ -67,7 +67,7 @@ namespace todoapiController.Controllers
                 {
                     return NotFound();
                 }
-                
+
             dbContext.Entry(todoitem).State = EntityState.Modified;
             await dbContext.SaveChangesAsync();
 
@@ -76,7 +76,7 @@ namespace todoapiController.Controllers
         }
 
         //Delete: api/ToDoItems/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteToDoItem(long id)
         {
             var todoitem = await dbContext.ToDoItems.FindAsync(id);
